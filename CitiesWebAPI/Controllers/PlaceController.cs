@@ -6,10 +6,11 @@ using CitiesWebAPI.Data;
 using CitiesWebAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace CitiesWebAPI.Controllers
 {
-    //[Route("api/[controller]")]
+    [Route("api/[controller]")]
     //[ApiController]
     public class PlaceController : ControllerBase
     {
@@ -19,7 +20,8 @@ namespace CitiesWebAPI.Controllers
             _db = db;
         }
 
-        [Route("Places/{cityId}")]
+        [Route("{cityId}")]
+        [HttpGet]
         public IActionResult GetPlaces(int cityId)
         {
             List<Place> places = _db.Places.Where(x => x.CityId == cityId).ToList();
@@ -27,7 +29,8 @@ namespace CitiesWebAPI.Controllers
             return new ObjectResult(places);
         }
 
-        [Route("City/{cityId}/place/{placeId}")]
+        [Route("{placeId}/city/{cityId}")]
+        [HttpGet]
         public IActionResult GetCity(int cityId, int placeId)
         {
 

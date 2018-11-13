@@ -33,18 +33,19 @@ namespace CitiesWebAPI
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
-            services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("foo"));
+            //services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("foo"));
+
+            services.AddDbContext<CityDataContext>(options =>
+            {
+                var connectionString = Configuration.GetConnectionString("DataContext");
+                options.UseSqlServer(connectionString);
+            });
+
             services.AddMvc(options =>
             {
                 options.RespectBrowserAcceptHeader = true;
                 options.OutputFormatters.Add(new XmlSerializerOutputFormatter());
             });
-
-            /*services.AddDbContext<CityDataContext>(options =>
-            {
-                var connectionString = Configuration.GetConnectionString("DataContext");
-                options.UseSqlServer(connectionString);
-            });*/
 
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>

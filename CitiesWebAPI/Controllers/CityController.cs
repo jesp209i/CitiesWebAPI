@@ -125,16 +125,14 @@ namespace CitiesWebAPI.Controllers
         [HttpPatch("{cityId}")]
         public IActionResult UpdateCitySpecific([FromBody]JsonPatchDocument<UpdateSimpleCityDto> patch, int cityId)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             City city = _db.Cities.FirstOrDefault(x => x.Id == cityId);
             //SimpleCityDto simpleCityDto = new SimpleCityDto { Id = city.Id, Name = city.Name, Description = city.Description };
             var simpleCityDto = _mapper.Map<UpdateSimpleCityDto>(city);
             patch.ApplyTo(simpleCityDto, ModelState);
-
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
             var model = new
             {
                 original = simpleCityDto,

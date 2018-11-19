@@ -10,6 +10,7 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace CitiesWebAPI.Controllers
 {
+    [Produces("application/xml", "application/json")]
     [Route("api/[controller]")]
     //[ApiController]
     public class PlaceController : ControllerBase

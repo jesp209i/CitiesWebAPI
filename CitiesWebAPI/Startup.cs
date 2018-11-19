@@ -33,7 +33,6 @@ namespace CitiesWebAPI
             });
             var mapper = config.CreateMapper();
             services.AddSingleton(mapper);
-            //services.AddDbContext<CityDataContext>(options => options.UseInMemoryDatabase("foo"));
 
             services.AddDbContext<CityDataContext>(options =>
             {
@@ -50,7 +49,7 @@ namespace CitiesWebAPI
             // Register the Swagger generator, defining 1 or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "City and Points of Interest", Version = "v1", Description ="An API that shows cities and attractions" });
+            c.SwaggerDoc("v1",  new Info { Title = "City and Points of Interest", Version = "v1", Description ="An API that shows cities and attractions" });
             });
         }
 

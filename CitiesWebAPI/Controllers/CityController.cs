@@ -17,9 +17,9 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace CitiesWebAPI.Controllers
 {
-    [Route("api/City")]
-    [ApiController]
-    [Produces("application/json", "application/xml")]
+    
+    [Produces("application/xml","application/json")]
+    [Route("api/city")]
     public class CityController : ControllerBase
     {
         private readonly CityDataContext _db;
@@ -41,10 +41,10 @@ namespace CitiesWebAPI.Controllers
             {
                 //var simpleCities = cities.Select(x => new SimpleCityDto { Id = x.Id, Name = x.Name, Description = x.Description }).ToList();
                 var simpleCities = cities.Select(x => _mapper.Map<SimpleCityDto>(x)).ToList();
-                return new ObjectResult(simpleCities);
+                return Ok(simpleCities);
             }
 
-            return new ObjectResult(cities);
+            return Ok(cities);
 
         }
         [HttpGet("{id}")]
@@ -66,8 +66,6 @@ namespace CitiesWebAPI.Controllers
         }
         /// api/city
         [HttpPost]
-        [ProducesResponseType(201)]
-        [ProducesResponseType(400)]
         public IActionResult CreateCity([FromBody] SimpleCityDto newSimpleCity)
         {
             if (!ModelState.IsValid)

@@ -261,3 +261,5 @@ __pycache__/
 *.pyc
 /CitiesWebAPI/applicationsettings.development.json
 /CitiesWebAPI/applicationsettings.json
+/CitiesWebAPI/appsettings.development.json
+/CitiesWebAPI/appsettings.json

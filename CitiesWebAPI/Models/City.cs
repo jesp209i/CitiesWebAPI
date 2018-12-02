@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace CitiesWebAPI.Models
 {
-    public class City
+    public class City : ICloneable
     {
+        [Required]
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
@@ -19,5 +20,9 @@ namespace CitiesWebAPI.Models
 
         public List<Place> Places { get; set; }
 
+        public virtual object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 }

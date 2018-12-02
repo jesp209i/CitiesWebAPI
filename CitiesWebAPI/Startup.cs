@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Swashbuckle.AspNetCore.Swagger;
 using AutoMapper;
 using CitiesWebAPI.Models;
+using CitiesWebAPI.Entities;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
 
 namespace CitiesWebAPI
 {
@@ -36,9 +40,37 @@ namespace CitiesWebAPI
 
             services.AddDbContext<CityDataContext>(options =>
             {
-                var connectionString = Configuration.GetConnectionString("DataContext");
-                options.UseSqlServer(connectionString);
+                options.UseInMemoryDatabase("Foo");
+                //options.UseSqlServer(Configuration.GetConnectionString("DataContext"));
             });
+            services.AddIdentity<ApiUser, IdentityRole>()
+                .AddEntityFrameworkStores<CityDataContext>();
+
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    config.Cookies.ApplicationCookie.Events =
+            //    new CookieAuthenticationEvents()
+            //    {
+            //        OnRedirectToLogin = (ctx) =>
+            //        {
+            //            if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+            //            {
+            //                ctx.Response.StatusCode = 401;
+            //            }
+
+            //            return Task.CompletedTask;
+            //        },
+            //        OnRedirectToAccessDenied = (ctx) =>
+            //        {
+            //            if (ctx.Request.Path.StartsWithSegments("/api") && ctx.Response.StatusCode == 200)
+            //            {
+            //                ctx.Response.StatusCode = 403;
+            //            }
+
+            //            return Task.CompletedTask;
+            //        }
+            //    };
+            //});
 
             services.AddMvc(options =>
             {
@@ -56,14 +88,12 @@ namespace CitiesWebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
-            //app.UseStaticFiles();
-
+            app.UseStaticFiles();
+            //app.UseAuthentication();
             app.UseMvc();
 
             // Enable middleware to serve generated Swagger as a JSON endpoint.

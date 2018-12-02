@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>hest</title>
+    <script src="/consume/jquery-3.3.1.min.js"></script>
+    <script src="site.js"></script>
+    <link rel="stylesheet" href="/consume/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="row">
+        <div class="col-md-4">
+            <br />
+            <ul>
+                <li>
+                    <a href="/api/city">Get cities list</a>
+                </li>
+            </ul>
+            <div class="container">
+                <div class="form-check">
+                    <input type="checkbox" id="poi" class="form-check-input" />
+                    <label class="form-check-label">
+                        With points of interest
+                    </label>
+                </div>
+                City id (optional):
+                <input type="number" id="cityid" min="0"  />
+            </div>
+            <hr />
+            <div class="container">
+                <form method="post" action="/api/city" id="formular" class="form">
+                    Name of the city: <input type="text" name="name" id="cityname" class="form-control" /><br />
+                    Description: <input type="text" name="description" id="citydescription" class="form-control" /><br />
+                    <button type="submit" id="formularknap" class="form-control btn btn-dark">Send Post-request</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-8" id="main-content" style="border: 1px solid #ccc;">
+            Her kommer der svar fra api som json-streng
+        </div>  
+    </div>
+</body>
+</html>

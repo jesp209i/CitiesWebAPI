@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CitiesWebAPI.Data;
 using CitiesWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,8 +18,8 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace CitiesWebAPI.Controllers
 {
-    
-    [Produces("application/xml","application/json")]
+    //[Authorize]
+    [Produces("application/json", "application/xml")]
     [Route("api/city")]
     public class CityController : ControllerBase
     {
@@ -50,18 +51,18 @@ namespace CitiesWebAPI.Controllers
         [HttpGet("{id}")]
         public IActionResult GetCity(int id, bool getPointOfInterest = false)
         {
-            var cityResult = _db.Cities.FirstOrDefault(x => x.Id == id);
+            var cityResult = _db.Cities.Include(x=> x.Places).FirstOrDefault(x => x.Id == id);
             if (cityResult == null)
             {
                 return NotFound();
             }
             if (!getPointOfInterest)
             {
-                return new ObjectResult(_mapper.Map<SimpleCityDto>(cityResult));
+                return Ok(_mapper.Map<SimpleCityDto>(cityResult));
                 //return new ObjectResult(_db.Cities.ToList().FindAll(x => x.Id == id).Select(x => new { x.Id, x.Name, x.Description }));
             }
             //return new ObjectResult(_db.Cities.Include(x => x.Places).FirstOrDefault(x => x.Id == id));
-            return new ObjectResult(_mapper.Map<FullCityDto>(cityResult));
+            return Ok(_mapper.Map<FullCityDto>(cityResult));
 
         }
         /// api/city
@@ -99,46 +100,32 @@ namespace CitiesWebAPI.Controllers
         }
         // api/city/{id}
         [HttpPut("{cityId:int}")]
-        public IActionResult UpdateCity([FromBody]UpdateSimpleCityDto city, int cityId)
+        public IActionResult UpdateCity(int cityId, [FromBody]City city)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || cityId != city.Id )
             {
                 return BadRequest(ModelState);
             }
-
-            City found = _db.Cities.FirstOrDefault(x=> x.Id == cityId);
-            if (found != null)
-            {
-                //found.Name = city.Name;
-                //found.Description = city.Description;
-                found = _mapper.Map<City>(city);
-                _db.Cities.Update(found);
-                _db.SaveChanges();
-                return Accepted();
-            }
-
-            return NotFound();
+            _db.Cities.Update(city);
+            _db.SaveChanges();
+            return Accepted();
         }
 
         [HttpPatch("{cityId}")]
-        public IActionResult UpdateCitySpecific([FromBody]JsonPatchDocument<UpdateSimpleCityDto> patch, int cityId)
+        public IActionResult UpdateCitySpecific([FromBody]JsonPatchDocument<City> patch, int cityId)
         {
             City city = _db.Cities.FirstOrDefault(x => x.Id == cityId);
-            //SimpleCityDto simpleCityDto = new SimpleCityDto { Id = city.Id, Name = city.Name, Description = city.Description };
-            var simpleCityDto = _mapper.Map<UpdateSimpleCityDto>(city);
-            patch.ApplyTo(simpleCityDto, ModelState);
+            patch.ApplyTo(city, ModelState);
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
             var model = new
             {
-                original = simpleCityDto,
+                original = city,
                 patched = patch
             };
-            //city.Name = simpleCityDto.Name;
-            //city.Description = simpleCityDto.Description;
-            city = _mapper.Map<City>(simpleCityDto);
+
             _db.Cities.Update(city);
             _db.SaveChanges();
             return Ok(model);
